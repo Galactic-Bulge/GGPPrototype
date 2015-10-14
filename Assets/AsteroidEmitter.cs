@@ -4,30 +4,53 @@ using System.Collections.Generic;
 
 public class AsteroidEmitter : MonoBehaviour {
 
+    /// <summary>
+    /// List of rock prefabs to use. Currently only one
+    /// </summary>
     [SerializeField]
     private GameObject[] asteroidsPrefabs = new GameObject[4];
 
+    /// <summary>
+    /// List of currently active/flying asteroids
+    /// </summary>
     private List<Asteroid> activeAsteroids;
 
+    /// <summary>
+    /// Routine for periodically firing off asteroids
+    /// </summary>
     private IEnumerator emitter;
 
-    private float timer = .25f;
+    /// <summary>
+    /// The time bewteen asteroid emission
+    /// </summary>
+    private float timer;
 
-	// Use this for initialization
+	/// <summary>
+    /// Instantiate the emitter
+    /// </summary>
 	void Start () {
         activeAsteroids = new List<Asteroid>();
         emitter = EmitterRoutine();
+        timer = 1 / GameManager.Instance.level;
         StartCoroutine(emitter);
 	}
 
+    /// <summary>
+    /// Start up the emission routine when the emitter is activated
+    /// </summary>
     void OnEnable()
     {
         if (emitter != null)
         {
+            // set the time between emissions to be inversely proportional to the current level
+            timer = 1.0f / GameManager.Instance.level;
             StartCoroutine(emitter);
         }
     }
 	
+    /// <summary>
+    /// When the emitter is disabled stop the emission routine
+    /// </summary>
     void OnDisable()
     {
         if (emitter != null)
@@ -36,12 +59,9 @@ public class AsteroidEmitter : MonoBehaviour {
         }
     }
 
-	// Update is called once per frame
-	void Update () {
-	    
-	}
-
 #if UNITY_EDITOR
+
+    // just highlight the emitter in the editor
     void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
@@ -49,6 +69,10 @@ public class AsteroidEmitter : MonoBehaviour {
     }
 #endif
 
+    /// <summary>
+    /// This routine creates a field of asteroids based upon the bounds of the emitter object.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator EmitterRoutine()
     {
         while (enabled)
@@ -66,6 +90,8 @@ public class AsteroidEmitter : MonoBehaviour {
                 pos.z = transform.position.z;
 
                 temp.transform.position = pos;
+                temp.GetComponent<Asteroid>().onDestroyed += GameManager.Instance.OnDestroyedAsteroid;
+
                 activeAsteroids.Add(temp.GetComponent<Asteroid>());
             }
         }
