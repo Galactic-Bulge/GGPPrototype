@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    [SerializeField]
+    private Texture2D cursor;
+
     /// <summary>
     /// The asteroid emitter
     /// </summary>
@@ -73,6 +76,7 @@ public class GameManager : MonoBehaviour
     {
         level = 1;
         instance = this;
+        Cursor.SetCursor(cursor, new Vector2(cursor.width/2,cursor.height/2), CursorMode.Auto);
     }
 
     /// <summary>
@@ -114,7 +118,7 @@ public class GameManager : MonoBehaviour
     {
         points += byShip ? 10 : 0;
 
-        Debug.Log(points);
+        UIManager.Instance.SetScore(points);
     }
 
 }

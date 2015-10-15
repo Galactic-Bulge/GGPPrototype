@@ -47,6 +47,11 @@ public class Controller : MonoBehaviour {
     /// </summary>
     private bool invincible;
 
+    void Start()
+    {
+        UIManager.Instance.SetLives(lives);
+    }
+
     /// <summary>
     /// Collision Event
     /// </summary>
@@ -57,6 +62,7 @@ public class Controller : MonoBehaviour {
         if(other.tag == "Asteroid" && !invincible)
         {
             health -= 10;
+            UIManager.Instance.SetHealth(health);
         }
     }
 
@@ -109,6 +115,8 @@ public class Controller : MonoBehaviour {
         if(health <= 0)
         {
             lives--;
+
+            UIManager.Instance.SetLives(lives);
 
             // check lives
             if(lives <= 0) // end game
